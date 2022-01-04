@@ -1,4 +1,4 @@
-Package: ICDMM
+Package: jICDMM
 Type: Package
 Title: Deterministic malaria odin model
 Version: 0.1.1

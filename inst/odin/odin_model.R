@@ -138,6 +138,7 @@ age20u <- user(integer=TRUE) # upper index of age 20 age compartment
 age_20_factor <- user() # factor calculated in equilibrium solution
 PM <- user() # immunity constant
 
+##### OLD VERSION
 # ICM - maternally acquired immunity
 init_ICM[,,] <- user()
 dim(init_ICM) <- c(na,nh,num_int)
@@ -148,6 +149,24 @@ init_ICM_pre[1:nh,1:num_int] <- PM*(ICA[age20l,i,j] + age_20_factor*(ICA[age20u,
 
 deriv(ICM[1, 1:nh, 1:num_int]) <- -1/dCM*ICM[i,j,k] + (init_ICM_pre[j,k]-ICM[i,j,k])/x_I[i]
 deriv(ICM[2:na, 1:nh, 1:num_int]) <- -1/dCM*ICM[i,j,k] - (ICM[i,j,k]-ICM[i-1,j,k])/x_I[i]
+
+#### END OF OLD VERSION
+
+############# PATRICK: switched in the maternal immunity from the c++ version
+
+# Pass in
+ICM_age[]<-user()
+dim(ICM_age)<-na
+dim(ICM_P) <- c(na,nh,num_int)
+#init_ICM_P <- user()
+#dim(init_ICM_P) <- c(na, nh, num_int)
+#initial(ICM_P[,,]) <- init_ICM_P[,,]
+
+# Different ODE
+ICM_P[1:na, 1:nh, 1:num_int]<-ICM_age[i]*init_ICM_pre[j,k]
+output(ICM_P) <- TRUE
+
+#################### END OF CHANGES ##############################
 
 # ICA - exposure driven immunity
 init_ICA[,,] <- user()
@@ -532,3 +551,7 @@ output(r_IRS) <- r_IRS
 output(s_IRS) <- s_IRS
 output(cov[]) <- TRUE
 output(K0) <- K0
+output(EIR[]) <- TRUE
+output(av_human[]) <- TRUE
+output(rel_foi[]) <- TRUE
+output(foi_age[]) <- TRUE
