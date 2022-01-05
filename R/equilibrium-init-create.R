@@ -165,7 +165,7 @@ equilibrium_init_create <- function(age_vector, het_brackets,
   for (i in 1:(na-1))
     ICM_age[i]<- mpl$dCM/(age[i+1]-age[i])*(exp(-age[i]/mpl$dCM)-exp(-age[i+1]/mpl$dCM))
   ICM_age[na]<-0
-  ICM_eq<-ICM_age%*%IC_20
+  ICM_eq <- ICM_age%*%IC_20
 
   ## END OF PATRICK VERSION
 
@@ -367,7 +367,7 @@ equilibrium_init_create <- function(age_vector, het_brackets,
               theta_c = theta_c, age = age_vector*mpl$DY, ft = ft, FOIv_eq = FOIv_eq,
               betaS = betaS, betaA = betaA, betaU = betaU, FOIvij_eq=FOIvij_eq,
               age_mid_point = age_mid_point, het_bounds = het_bounds, pi = pi,
-              age20l = age20l, age20u = age20u, age_20_factor = age_20_factor)#, ICM_P_eq = ICM_P_eq, ICM_age = as.vector(ICM_age))
+              age20l = age20l, age20u = age20u, age_20_factor = age_20_factor, ICM_age = as.vector(ICM_age), IC_20 = IC_20)
 
   res <- append(res,mpl)
 
