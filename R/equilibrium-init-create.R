@@ -102,20 +102,23 @@ equilibrium_init_create <- function(age_vector, het_brackets,
   {
     x_I[i] <- den[i]/(den[i - 1] * age_rate[i - 1])  #temporary variables
   }
-  fd <- 1 - (1 - mpl$fD0)/(1 + (age/mpl$aD)^mpl$gammaD)
+  fd <- 1 - (1 - mpl$fD0)/(1 + (age_mid_point/mpl$aD)^mpl$gammaD)
 
   # maternal immunity begins at a level proportional to the clinical
   # immunity of a 20 year old, this code finds that level
-  age20i <- rep(0, na)
-  for (i in 2:na)
-  {
-    age20i[i] <- ifelse(age[i] >= (20 * mpl$DY) & age[i - 1] < (20 * mpl$DY),
-                        i, age20i[i - 1])
-  }
-  age20u <- as.integer(age20i[na])
-  age20l <- as.integer(age20u - 1)
-  age_20_factor <- (20 * mpl$DY - age[age20l] - 0.5 * age_width[age20l]) *
-    2/(age_width[age20l] + age_width[age20u])
+
+  age20 <- which.min(abs(age_mid_point - (20*365)))
+
+  # age20i <- rep(0, na)
+  # for (i in 2:na)
+  # {
+  #   age20i[i] <- ifelse(age_mid_point[i] >= (20 * mpl$DY) & age_mid_point[i - 1] < (20 * mpl$DY),
+  #                       i, age20i[i - 1])
+  # }
+  # age20u <- as.integer(age20i[na])
+  # age20l <- as.integer(age20u - 1)
+  # age_20_factor <- (20 * mpl$DY - age_mid_point[age20l] - 0.5 * age_width[age20l]) *
+  #   2/(age_width[age20l] + age_width[age20u])
 
   # finding initial values for all immunity states
   IB_eq <- matrix(0, na, nh)
@@ -157,17 +160,31 @@ equilibrium_init_create <- function(age_vector, het_brackets,
   # }
   ## END OF OLD VERSION
 
-  ## PATRICK VERSION
-  IC_20 <- matrix(0, 1, nh)
-  ICM_age <- matrix(0, na,1)
+  ## GIO VERSION
+  IM0 <- ICA_eq[age20]*mpl$PM
 
-  for (j in 1:nh)
-    IC_20[j] <- mpl$PM * (ICA_eq[age20l, j] + age_20_factor *
-                            (ICA_eq[age20u, j] - ICA_eq[age20l, j]))
-  for (i in 1:(na-1))
-    ICM_age[i]<- mpl$dCM/(age[i+1]-age[i])*(exp(-age[i]/mpl$dCM)-exp(-age[i+1]/mpl$dCM))
-  ICM_age[na]<-0
-  ICM_eq <- ICM_age%*%IC_20
+  ICM <- rep(0, na)
+
+  for (i in 1:na) {
+    # maternal clinical and severe immunity decays from birth
+    if (i == na) {
+      ICM[i] <- 0
+    } else {
+      ICM[i] <- IM0 * mpl$dCM / (age[i + 1] - age[i]) * (exp(-age[i] / mpl$dCM) - exp(-age[i + 1] / mpl$dCM))
+    }
+  }
+  ICM_eq <- ICM
+  ## PATRICK VERSION
+  # IC_20 <- matrix(0, 1, nh)
+  # ICM_age <- matrix(0, na,1)
+  #
+  # for (j in 1:nh)
+  #   IC_20[j] <- mpl$PM * (ICA_eq[age20l, j] + age_20_factor *
+  #                           (ICA_eq[age20u, j] - ICA_eq[age20l, j]))
+  # for (i in 1:(na-1))
+  #   ICM_age[i]<- mpl$dCM/(age_mid_point[i+1]-age[i])*(exp(-age_mid_point[i]/mpl$dCM)-exp(-age_mid_point[i+1]/mpl$dCM))
+  # ICM_age[na]<-0
+  # ICM_eq <- ICM_age%*%IC_20
 
   ## END OF PATRICK VERSION
 
@@ -368,8 +385,7 @@ equilibrium_init_create <- function(age_vector, het_brackets,
               ssa2 = ssa2, ssa3 = ssa3, ssb1 = ssb1, ssb2 = ssb2, ssb3 = ssb3,
               theta_c = theta_c, age = age_vector*mpl$DY, ft = ft, FOIv_eq = FOIv_eq,
               betaS = betaS, betaA = betaA, betaU = betaU, FOIvij_eq=FOIvij_eq,
-              age_mid_point = age_mid_point, het_bounds = het_bounds, pi = pi,
-              age20l = age20l, age20u = age20u, age_20_factor = age_20_factor, ICM_age = as.vector(ICM_age), IC_20 = IC_20)
+              age_mid_point = age_mid_point, het_bounds = het_bounds, pi = pi)
 
   res <- append(res,mpl)
 
