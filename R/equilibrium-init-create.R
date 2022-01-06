@@ -63,6 +63,7 @@ equilibrium_init_create <- function(age_vector, het_brackets,
 
   }
   age_rate[na] = 0
+  age_mid_point[na] <- age[na]
 
 
   den <- 1/(1 + age_rate[1]/mpl$eta)
@@ -78,7 +79,8 @@ equilibrium_init_create <- function(age_vector, het_brackets,
   foi_age <- c()
   for (i in 1:na)
   {
-    foi_age[i] <- 1 - (mpl$rho * exp(-age[i]/mpl$a0))  #force of infection for each age group
+    foi_age[i] <- 1 - (mpl$rho * exp(-age_mid_point[i]/mpl$a0))
+    #foi_age[i] <- 1 - (mpl$rho * exp(-age[i]/mpl$a0))  #force of infection for each age group
   }
   fden <- foi_age * den
   omega <- sum(fden)  #normalising constant
